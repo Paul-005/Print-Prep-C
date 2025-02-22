@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Function to add student information as a block comment
+# Function to add student information and program output as comments
 add_student_info() {
     local file=$1
     local name=$2
     local class=$3
     local roll_no=$4
     local program_title=$5
+    local c_file=$6
 
     # Create the comment block
     comment="#################### \n"
@@ -20,6 +21,22 @@ add_student_info() {
     temp_file=$(mktemp)
     echo -e "$comment" > "$temp_file"
     cat "$file" >> "$temp_file"
+    
+    # Compile and run the C program, capture output
+    echo -e "\nOUTPUT\n" >> "$temp_file"
+    current_path="$(whoami)@$(hostname):$(dirname $(realpath "$c_file"))"
+    echo -e "$current_path$ gcc $(basename "$c_file")" >> "$temp_file"
+    
+    # Compile the program
+    gcc "$c_file" -o temp_prog
+    
+    if [ -f temp_prog ]; then
+        echo -e "$current_path$ ./temp_prog" >> "$temp_file"
+        # Run the program and capture complete interaction
+        (script -f -q /dev/null -c "./temp_prog" | tee -a "$temp_file") 2>&1
+        rm temp_prog
+    fi
+
     mv "$temp_file" "$file"
 }
 
@@ -55,8 +72,8 @@ for file in $files; do
     output_file="$output_folder/$(basename "${file%.*}").txt"
     cp "$file" "$output_file"
     
-    # Then add student info only to the text copy
-    add_student_info "$output_file" "$name" "$class" "$roll_no" "$program_title"
+    # Then add student info and program output only to the text copy
+    add_student_info "$output_file" "$name" "$class" "$roll_no" "$program_title" "$file"
 done
 
-zenity --info --text="Processing complete!\nText copies with student info are in the '$output_folder' folder.\nOriginal C files remain unchanged."
+zenity --info --text="Processing complete!\nText copies with student info and program output are in the '$output_folder' folder.\nOriginal C files remain unchanged."
