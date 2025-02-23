@@ -41,5 +41,3 @@ This script automates the process of adding student information, program titles,
     * A `zenity` dialog will indicate that the processing is complete.
     * You can find the converted text files in the `PRINT_FOLDER` directory.
     * You can then view and edit these text files as needed.
-
-## Example Output (Inside the .txt file)
