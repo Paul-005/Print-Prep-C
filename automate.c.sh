@@ -40,35 +40,54 @@ add_student_info() {
     mv "$temp_file" "$file"
 }
 
-# Function to get and validate student info
-get_student_info() {
+
+# Function to get student details with validation and ability to edit specific field
+get_student_details() {
+    local name class roll_no
+
+    # Initial collection of details
     while true; do
-        # Prompt for student details
         name=$(zenity --entry --title="Student Info" --text="Enter student name:" --width=300)
         class=$(zenity --entry --title="Student Info" --text="Enter class:" --width=300)
         roll_no=$(zenity --entry --title="Student Info" --text="Enter roll number:" --width=300)
 
-        # If any field is empty, show an error and prompt again
+        # If any field is empty, show error message
         if [ -z "$name" ] || [ -z "$class" ] || [ -z "$roll_no" ]; then
-            zenity --error --text="All fields are required! Please try again."
-            continue
-        fi
-
-        # Show the entered details for confirmation
-        confirmation=$(zenity --question --title="Confirm Info" --text="Is this information correct?\n\nName: $name\nClass: $class\nRoll No: $roll_no" --width=300)
-
-        if [ $? -eq 0 ]; then
-            # If confirmed, exit the loop
-            break
+            zenity --error --text="All fields are required!"
         else
-            # If not confirmed, allow the user to correct the details
-            zenity --info --text="Please correct the details."
+            break
         fi
     done
-}
 
-# Get student details (with confirmation)
-get_student_info
+    # Allow the user to confirm or edit specific fields
+    while true; do
+        confirmation=$(zenity --question --title="Confirm Details" --text="Student Name: $name\nClass: $class\nRoll No: $roll_no\nIs this correct?" --width=300 --ok-label="Yes" --cancel-label="Edit Details")
+
+        if [ $? -eq 0 ]; then
+            break  # Proceed if everything is correct
+        else
+            # Allow the user to choose which field to edit
+            edit_choice=$(zenity --list --title="Edit Information" --text="Select a field to edit:" --radiolist --column="Select" --column="Field" TRUE "Name" FALSE "Class" FALSE "Roll No")
+
+            case $edit_choice in
+                "Name")
+                    name=$(zenity --entry --title="Edit Student Name" --text="Enter new student name:" --width=300)
+                    ;;
+                "Class")
+                    class=$(zenity --entry --title="Edit Class" --text="Enter new class:" --width=300)
+                    ;;
+                "Roll No")
+                    roll_no=$(zenity --entry --title="Edit Roll Number" --text="Enter new roll number:" --width=300)
+                    ;;
+                *)
+                    continue
+                    ;;
+            esac
+        fi
+    done
+
+    echo "$name $class $roll_no"
+}
 
 # Select C files
 files=$(zenity --file-selection --title="Select C files" --file-filter="*.c" --multiple --separator="|")
@@ -80,6 +99,12 @@ fi
 # Create output folder for text files
 output_folder="PRINT_FOLDER"
 mkdir -p "$output_folder"
+
+# Get student details with the new function
+student_details=$(get_student_details)
+name=$(echo $student_details | cut -d ' ' -f 1)
+class=$(echo $student_details | cut -d ' ' -f 2)
+roll_no=$(echo $student_details | cut -d ' ' -f 3)
 
 # Process each file
 IFS="|"
