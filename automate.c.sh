@@ -116,9 +116,13 @@ for file in $files; do
     output_file="$output_folder/$(basename "${file%.*}").txt"
     cp "$file" "$output_file"
     
+    echo
+    echo "executing $(basename "$file"):.." 
+    echo
+    
     # Then add student info and program output only to the text copy
     add_student_info "$output_file" "$name" "$class" "$roll_no" "$program_title" "$file"
-    echo 
+    echo
     echo
 done
 
