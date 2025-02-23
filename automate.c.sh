@@ -97,4 +97,5 @@ for file in $files; do
     echo
 done
 
-zenity --info --text="Processing complete!\n\nText copies with student info and program output are in the '$output_folder' folder.\n\nContributors: <a href=\"https://github.com/Paul-005\">PAUL</a> and <a href=\"https://github.com/OpjeTrinity\">VIVEK</a>\n\nIf you encounter any issues or bugs, please report them on GitHub: <a href=\"https://github.com/Paul-005/Print-Prep-C/issues\">Report Issues Here</a>"
+
+zenity --info --text="Processing complete!\n\nText copies with student info and program output are in the '$output_folder' folder. \nPlease ensure all generated texts are correct before using.\n\nContributors: <a href=\"https://github.com/Paul-005\">PAUL</a> and <a href=\"https://github.com/OpjeTrinity\">VIVEK</a>\n\nIf you encounter any issues or bugs, please report them on GitHub: <a href=\"https://github.com/Paul-005/Print-Prep-C/issues\">Report Issues Here</a>"
