@@ -11,11 +11,11 @@ add_student_info() {
 
     # Create the comment block
     comment="#################### \n"
-    comment+="Program Title: ${program_title:-"Untitled Program"}\n"
     comment+="Student Name: $name\n"
     comment+="Class: $class\n"
     comment+="Roll No: $roll_no\n"
     comment+="#################### \n\n"
+    comment+="#### ${program_title:-"Untitled Program"} ####\n\n"
 
     # Create a temporary file with comment and content
     temp_file=$(mktemp)
@@ -40,16 +40,35 @@ add_student_info() {
     mv "$temp_file" "$file"
 }
 
-# Get student details
-name=$(zenity --entry --title="Student Info" --text="Enter student name:" --width=300)
-class=$(zenity --entry --title="Student Info" --text="Enter class:" --width=300)
-roll_no=$(zenity --entry --title="Student Info" --text="Enter roll number:" --width=300)
+# Function to get and validate student info
+get_student_info() {
+    while true; do
+        # Prompt for student details
+        name=$(zenity --entry --title="Student Info" --text="Enter student name:" --width=300)
+        class=$(zenity --entry --title="Student Info" --text="Enter class:" --width=300)
+        roll_no=$(zenity --entry --title="Student Info" --text="Enter roll number:" --width=300)
 
-# Check if all fields are filled
-if [ -z "$name" ] || [ -z "$class" ] || [ -z "$roll_no" ]; then
-    zenity --error --text="All fields are required!"
-    exit 1
-fi
+        # If any field is empty, show an error and prompt again
+        if [ -z "$name" ] || [ -z "$class" ] || [ -z "$roll_no" ]; then
+            zenity --error --text="All fields are required! Please try again."
+            continue
+        fi
+
+        # Show the entered details for confirmation
+        confirmation=$(zenity --question --title="Confirm Info" --text="Is this information correct?\n\nName: $name\nClass: $class\nRoll No: $roll_no" --width=300)
+
+        if [ $? -eq 0 ]; then
+            # If confirmed, exit the loop
+            break
+        else
+            # If not confirmed, allow the user to correct the details
+            zenity --info --text="Please correct the details."
+        fi
+    done
+}
+
+# Get student details (with confirmation)
+get_student_info
 
 # Select C files
 files=$(zenity --file-selection --title="Select C files" --file-filter="*.c" --multiple --separator="|")
@@ -74,6 +93,9 @@ for file in $files; do
     
     # Then add student info and program output only to the text copy
     add_student_info "$output_file" "$name" "$class" "$roll_no" "$program_title" "$file"
+    echo 
+    echo
 done
 
-zenity --info --text="Processing complete!\nText copies with student info and program output are in the '$output_folder' folder.\nOriginal C files remain unchanged."
+
+zenity --info --text="Processing complete!\n\nText copies with student info and program output are in the '$output_folder' folder. \nPlease ensure all generated texts are correct before using.\n\nContributors: <a href=\"https://github.com/Paul-005\">PAUL</a> and <a href=\"https://github.com/OpjeTrinity\">VIVEK</a>\n\nIf you encounter any issues or bugs, please report them on GitHub: <a href=\"https://github.com/Paul-005/Print-Prep-C/issues\">Report Issues Here</a>"
