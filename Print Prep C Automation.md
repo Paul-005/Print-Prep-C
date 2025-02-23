@@ -4,18 +4,18 @@ This script automates the process of adding student information, program titles,
 
 ## Usage
 
-1.  **Download the script:** Download the `automate.sh` script to a directory on your system.
+1.  **Download the script:** Download the `automate.c.sh` script to a directory on your system.
 2.  **Open Terminal:** Open your terminal and navigate to the directory where you downloaded the script.
 3.  **Make the script executable:** Run the following command:
 
     ```bash
-    chmod +x automate.sh
+    chmod +x automate.c.sh
     ```
 
 4.  **Run the script:** Execute the script using:
 
     ```bash
-    ./automate.sh
+    ./automate.c.sh
     ```
 
 5.  **Provide Student Information:**
